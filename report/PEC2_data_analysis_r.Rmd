@@ -465,6 +465,7 @@ b) Para calcular la probabilidad de que el fármaco se elimine en menos de 2 hor
    cat("Insuficiencia Renal:", prob_mayor_6_insuficiencia, "\n")
    ```
    Los resultados muestran que la probabilidad de que el fármaco se elimine en menos de 2 horas es menor en pacientes con insuficiencia renal. En cambio, la probabilidad de que permanezca más de 6 horas en el organismo es claramente mayor en este grupo. Esto sugiere que la eliminación es más lenta en pacientes con insuficiencia renal, lo que puede tener implicaciones en el ajuste de la dosis.
+   
 c) Para realizar 10.000 simulaciones en cada escenario y estimar la media, la varianza y los percentiles, se puede utilizar el siguiente código:
 
    ```{r}
@@ -578,32 +579,40 @@ b) Para calcular la probabilidad de que al menos 25 de los 30 pacientes con resp
    ```{r}
    # Probabilidad de que al menos 25 de los 30 pacientes con respuesta mejoren
    prob_al_menos_25_respuesta <- 1 - pbinom(24, size = 30, prob = 0.80)
-   cat("Probabilidad de que al menos 25 pacientes con respuesta mejoren:", prob_al_menos_25_respuesta, "\n")
-
+   cat("Probabilidad de que al menos 25 pacientes con respuesta mejoren:",
+      prob_al_menos_25_respuesta, "\n")
+  
    # Probabilidad de que como máximo 25 de los 80 pacientes que no responden mejoren
-   prob_maximo_25_no_respuesta <- pbinom(25, size = 80, prob = 0.15)
-   cat("Probabilidad de que como máximo 25 pacientes que no responden mejoren:", prob_maximo_25_no_respuesta, "\n")
+   prob_maximo_25_no_respuesta <- pbinom(25, size = 80, prob = 0.20)
+   cat("Probabilidad de que como máximo 25 pacientes que no responden mejoren:",
+      prob_maximo_25_no_respuesta, "\n")
    ```
-
+     Para el grupo de 30 pacientes que responden al tratamiento, el número de pacientes que mejora sigue una distribución binomial con probabilidad de éxito 0.80, ya que en este grupo la probabilidad de mejoría clínica tras una semana es del 80 %.
+      Para el grupo de 80 pacientes que no responden al tratamiento, el número de pacientes que mejora sigue una distribución binomial con probabilidad de éxito 0.20, correspondiente a la probabilidad de mejoría atribuible al efecto placebo o a la variabilidad individual.
 c) Para representar la distribución del número de pacientes que mejoran en ambos grupos, se puede utilizar un histograma o una gráfica de barras. A continuación, se muestra cómo hacerlo:
 
    ```{r}
    # Simulaciones para pacientes con respuesta al tratamiento
    simulaciones_respuesta <- rbinom(10000, size = 30, prob = 0.80)
-
+  
    # Simulaciones para pacientes que no responden al tratamiento
-   simulaciones_no_respuesta <- rbinom(10000, size = 80, prob = 0.15)
-
+   simulaciones_no_respuesta <- rbinom(10000, size = 80, prob = 0.20)
+  
    # Representar las distribuciones
-   par(mfrow = c(1, 2)) # Para mostrar ambas gráficas lado a lado
-   hist(simulaciones_respuesta, breaks = seq(-0.5, 30.5, by = 1), col = "blue", main = "Pacientes con Respuesta", xlab = "Número de Pacientes que Mejoran")
-   hist(simulaciones_no_respuesta, breaks = seq(-0.5, 80.5, by = 1), col = "red", main = "Pacientes sin Respuesta", xlab = "Número de Pacientes que Mejoran")
+   par(mfrow = c(1, 2))
+   hist(simulaciones_respuesta, breaks = seq(-0.5, 30.5, by = 1),
+        col = "blue",
+        main = "Pacientes con Respuesta",
+        xlab = "Número de Pacientes que Mejoran")
+  
+   hist(simulaciones_no_respuesta, breaks = seq(-0.5, 80.5, by = 1),
+       col = "red",
+        main = "Pacientes sin Respuesta",
+        xlab = "Número de Pacientes que Mejoran")
    ```
-    En la gráfica se puede ver que el número de pacientes que mejoran es claramente mayor en el grupo que responde al tratamiento, ya que la distribución está centrada en valores más altos. En cambio, en el grupo que no responde, la mayoría de los valores se concentran en números bajos.
-
-    Esta diferencia se explica por la probabilidad de mejora en cada grupo: en los pacientes que responden es alta (0.80), mientras que en los que no responden es bastante menor (0.15). Esto hace que las distribuciones sean muy diferentes entre sí. 
-    
-    En conjunto, los resultados muestran de forma bastante clara que el tratamiento tiene un efecto notable en los pacientes que responden, mientras que en el resto la mejoría es mucho menos frecuente.
+     En la gráfica se puede observar que el número de pacientes que mejoran es claramente mayor en el grupo que responde al tratamiento, ya que la distribución está centrada en valores más altos. En cambio, en el grupo que no responde, la mayoría de los valores se concentran en números más bajos. Esta diferencia se explica por la probabilidad de mejora en cada grupo: en los pacientes que responden es elevada (0.80), mientras que en los que no responden es considerablemente menor (0.20). Esto provoca que las distribuciones sean claramente distintas entre sí.
+   
+   En conjunto, los resultados muestran que el tratamiento tiene un efecto importante en los pacientes que responden, mientras que en el resto la mejoría es mucho menos frecuente y puede atribuirse principalmente a efectos no específicos, como el placebo o la variabilidad individual.
 
 d) Como reflexión final, el estudio muestra que el nuevo tratamiento analgésico tiene una eficacia variable entre pacientes, con una proporción relevante que no responde. En este caso, la probabilidad de mejoría es mucho mayor en el grupo que sí responde al tratamiento que en el grupo que no responde, tal como se ha visto en los resultados obtenidos.
 
