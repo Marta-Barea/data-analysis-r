@@ -284,8 +284,8 @@ a) Para cargar el paquete `datasets`, el conjunto de datos `Theoph` y las librer
    # Cargar el conjunto de datos Theoph
    data("Theoph")
   
-   # Mostrar diez primeras filas del conjunto de datos Theoph
-   head(Theoph, 10)
+   # Mostrar el conjunto de datos Theoph
+   print(Theoph)
   
    # Cargar las librerías necesarias para SQL
    library(DBI)
