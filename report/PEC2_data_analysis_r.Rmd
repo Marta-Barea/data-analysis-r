@@ -368,24 +368,29 @@ d) Para obtener el tiempo en el que ocurre la concentración máxima por pacient
    query_max <- "
    SELECT t.Subject, t.Time, t.conc
    FROM Theoph t
-   WHERE t.Time = (
-     SELECT MIN(t2.Time)
+   WHERE t.conc = (
+     SELECT MAX(t2.conc)
      FROM Theoph t2
      WHERE t2.Subject = t.Subject
-       AND t2.conc = (
-         SELECT MAX(t3.conc)
-         FROM Theoph t3
-         WHERE t3.Subject = t.Subject
+   )
+   AND t.Time = (
+     SELECT MIN(t3.Time)
+     FROM Theoph t3
+     WHERE t3.Subject = t.Subject
+       AND t3.conc = (
+         SELECT MAX(t4.conc)
+         FROM Theoph t4
+         WHERE t4.Subject = t.Subject
        )
    )
-   ORDER BY CAST(t.Subject AS INTEGER)
+   ORDER BY CAST(t.Subject AS INTEGER);
    "
    resultado_max <- dbGetQuery(con, query_max)
    print(resultado_max)
    ```
-      En este caso, se utiliza una subconsulta correlacionada para identificar la concentración máxima de cada sujeto. Para cada paciente, se calcula el valor máximo de concentración (**`MAX(conc)`**)  y, posteriormente, se seleccionan aquellas filas que alcanzan dicho valor.
+      En este caso, se utilizan subconsultas correlacionadas para obtener, para cada paciente, la observación cuya concentración coincide con la máxima registrada (**`MAX(conc)`**).
       
-    No obstante, para asegurar que el resultado devuelve una única fila por paciente, incluso en caso de que existan varios tiempos con la misma concentración máxima, se introduce un criterio adicional, que consiste en seleccionar el primer instante temporal en el que se alcanza dicha concentración máxima. De este modo, no solo se identifica la concentración máxima de cada paciente, sino también el tiempo exacto en que se alcanza.
+    Además, para garantizar que se devuelve una única fila por sujeto en caso de que existan varios tiempos con la misma concentración máxima, se añade un criterio adicional que selecciona el menor tiempo asociado a dicho valor máximo.De este modo, el resultado no solo identifica la concentración máxima de cada paciente, sino también el primer instante temporal en el que se alcanza.
 
 e) Para filtrar las observaciones en un intervalo de tiempo (entre 2 y 6 horas), se puede utilizar la siguiente consulta SQL:
 
