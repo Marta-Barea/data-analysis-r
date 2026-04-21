@@ -40,8 +40,6 @@ To reproduce the report, you need at least:
 - the `DBI` and `RSQLite` packages
 - a LaTeX distribution to generate the PDF output
 
-According to the YAML header in the Rmd file, the document can also generate a Word output, although the main deliverable included in the repository is the PDF version.
-
 ## Reproducibility
 
 1. Open `report/PEC2_data_analysis_r.Rmd` in RStudio.
