@@ -102,8 +102,13 @@ c) A continuación, se define la función `DNA_to_RNA`, que convierte una cadena
    El código para estas funciones es el siguiente:
 
    ```{r}
-   # Función para validar la secuencia de ADN
+   # Función para validar una secuencia de ADN
    validar_adn <- function(secuencia) {
+     if (!is.character(secuencia) || length(secuencia) != 1 || is.na(secuencia)) {
+       cat("Error: La entrada debe ser una única cadena de caracteres no vacía.\n")
+       return(FALSE)
+     }
+    
      if (grepl("^[ACGT]+$", secuencia)) {
        return(TRUE)
      } else {
@@ -111,8 +116,8 @@ c) A continuación, se define la función `DNA_to_RNA`, que convierte una cadena
        return(FALSE)
      }
    }
-
-   # Función para convertir ADN a ARN
+  
+   # Función para convertir una secuencia de ADN en ARN
    DNA_to_RNA <- function(adn) {
      if (validar_adn(adn)) {
        rna <- gsub("T", "U", adn)
@@ -121,17 +126,23 @@ c) A continuación, se define la función `DNA_to_RNA`, que convierte una cadena
        return(NULL)
      }
    }
+  
+   # Ejemplo de uso con una secuencia individual
+   ejemplo_adn <- "ATTGCTT"
+   resultado_ejemplo <- DNA_to_RNA(ejemplo_adn)
+   cat("Secuencia de ejemplo:", ejemplo_adn, "-> ARN:", resultado_ejemplo, "\n")
    ```
    
     En esta parte, la validación previa resulta importante porque evita procesar secuencias incorrectas y hace que la función sea más robusta. Así, antes de realizar la conversión, se comprueba que la cadena realmente corresponde a una secuencia de ADN válida.
 
-d) Finalmente, se ejecuta la función `DNA_to_RNA` sobre cada una de las secuencias de la matriz `secuencias` y se muestra el resultado en cada iteración:
+d) Finalmente, se ejecuta la función **`DNA_to_RNA`** sobre la matriz `secuencias` pasando cada fila de la matriz como entrada y mostrando el resultado iteración a iteración:
 
    ```{r}
-   # Ejecutar la función DNA_to_RNA sobre la matriz secuencias
+   # Aplicar la función DNA_to_RNA a cada secuencia de la matriz
    for (i in 1:nrow(secuencias)) {
      adn <- secuencias[i, 1]
      rna <- DNA_to_RNA(adn)
+    
      if (!is.null(rna)) {
        cat("Fila", i, "ADN:", adn, "-> ARN:", rna, "\n")
      }
@@ -173,20 +184,32 @@ c) ¿Cómo modificaríais el código para permitir al usuario introducir valores
 
 ### Resolución
 
-a) Para definir la función `indice_normalizacion`, es necesario incluir un control de errores que verifique que los parámetros recibidos sean numéricos y positivos. Esta comprobación es importante, ya que el índice solo tiene sentido si se trabaja con valores válidos. Una vez superada esa validación, se calcula el índice de normalización y se devuelve el resultado.
+a) Para definir la función `índice_normalizacion`, es necesario incluir un control de errores que verifique que los parámetros recibidos sean numéricos y positivos. En este contexto, `lecturas_gen` debe ser mayor que cero y `lecturas_totales` también debe ser mayor que cero, ya que el enunciado indica expresamente que ambos valores han de ser positivos.
 
    Para ello, el código correspondiente a esta función es el siguiente:
 
    ```{r}
    indice_normalizacion <- function(lecturas_gen, lecturas_totales) {
-     # Control de errores
+     # Control de errores: ambos parámetros deben ser numéricos
      if (!is.numeric(lecturas_gen) || !is.numeric(lecturas_totales)) {
        stop("Error: Ambos parámetros deben ser numéricos.")
      }
-     if (lecturas_gen < 0 || lecturas_totales <= 0) {
-       stop("Error: Las lecturas deben ser positivas y el total debe ser mayor que cero.")
+    
+     # Control de errores: ambos parámetros deben tener longitud 1
+     if (length(lecturas_gen) != 1 || length(lecturas_totales) != 1) {
+       stop("Error: Ambos parámetros deben ser valores únicos.")
      }
-     
+    
+     # Control de errores: no deben ser NA
+     if (is.na(lecturas_gen) || is.na(lecturas_totales)) {
+       stop("Error: Los parámetros no pueden ser NA.")
+    }
+    
+     # Control de errores: ambos parámetros deben ser positivos
+     if (lecturas_gen <= 0 || lecturas_totales <= 0) {
+       stop("Error: Ambos parámetros deben ser positivos y mayores que cero.")
+     }
+    
      # Cálculo del índice
      indice <- lecturas_gen / lecturas_totales
      return(indice)
@@ -200,23 +223,31 @@ b) Para comprobar el resultado de la función anterior, se pueden hacer pruebas 
    # Prueba con valores válidos
    lecturas_gen <- 500
    lecturas_totales <- 10000
+  
    resultado <- indice_normalizacion(lecturas_gen, lecturas_totales)
    cat("Índice de normalización:", resultado, "\n")
-
+  
    # Prueba con valores no numéricos
    tryCatch({
      indice_normalizacion("cincuenta", 10000)
    }, error = function(e) {
      cat(e$message, "\n")
    })
-
+  
    # Prueba con valores negativos
    tryCatch({
      indice_normalizacion(-500, 10000)
    }, error = function(e) {
      cat(e$message, "\n")
    })
-
+  
+   # Prueba con valor cero
+   tryCatch({
+     indice_normalizacion(0, 10000)
+   }, error = function(e) {
+     cat(e$message, "\n")
+   })
+  
    # Prueba con total de lecturas igual a cero
    tryCatch({
      indice_normalizacion(500, 0)
@@ -224,7 +255,7 @@ b) Para comprobar el resultado de la función anterior, se pueden hacer pruebas 
      cat(e$message, "\n")
    })
    ```
-      A partir de los resultados, se comprueba que la función devuelve el índice correcto cuando los valores son válidos y que muestra mensajes de error en los casos no válidos. Por tanto, la función no solo calcula el índice, sino que además controla adecuadamente situaciones que podrían dar lugar a resultados erróneos.
+      A partir de los resultados, se comprueba que la función devuelve el índice correcto cuando los valores son válidos y que muestra mensajes de error en los casos no válidos. Además, se verifica específicamente que el valor cero no se acepta, ya que el enunciado exige trabajar con valores positivos.
    
 c) Para permitir la introducción de valores por parte del usuario, se puede utilizar la función `readline`, ya que solicita la entrada desde la consola. Después, se convierte la entrada a formato numérico y se llama a `indice_normalizacion` con los valores introducidos.
 
@@ -232,19 +263,23 @@ c) Para permitir la introducción de valores por parte del usuario, se puede uti
 
    ```{r}
    # Solicitar al usuario que introduzca los valores
-   lecturas_gen <- as.numeric(readline(prompt = "Introduce el número de lecturas del gen: "))
-   lecturas_totales <- as.numeric(readline(prompt = "Introduce el número total de lecturas de la muestra: "))
-
+   if (interactive()) {
+    lecturas_gen <- as.numeric(readline(prompt = "Introduce el número de lecturas del gen: "))
+    lecturas_totales <- as.numeric(readline(prompt = "Introduce el número total de lecturas de la muestra: "))
+   } else {
+     # Valores de ejemplo para renderizar el documento
+     lecturas_gen <- 500
+     lecturas_totales <- 10000
+   }
+ 
    # Calcular el índice de normalización con control de errores
    tryCatch({
-      if (is.na(lecturas_gen) || is.na(lecturas_totales)) {
-        stop("Error: Debes introducir valores numéricos válidos.")
-      }
-      
+     if (is.na(lecturas_gen) || is.na(lecturas_totales)) {
+       stop("Error: Debes introducir valores numéricos válidos.")
+     }
+    
      resultado <- indice_normalizacion(lecturas_gen, lecturas_totales)
-  
      cat("Índice de normalización:", resultado, "\n")
-  
    }, error = function(e) {
      cat(e$message, "\n")
    })
@@ -284,12 +319,12 @@ a) Para cargar el paquete `datasets`, el conjunto de datos `Theoph` y las librer
    # Cargar el conjunto de datos Theoph
    data("Theoph")
   
-   # Mostrar el conjunto de datos Theoph
-   print(Theoph)
-  
    # Cargar las librerías necesarias para SQL
    library(DBI)
    library(RSQLite)
+   
+   # Mostrar el conjunto de datos Theoph
+   print(Theoph)
    ```
     De esta manera, primero se dispone de los datos y después del entorno necesario para consultar esa información mediante SQL.
     
@@ -319,6 +354,7 @@ c) Para calcular la concentración media por sujeto mediante una consulta SQL, s
    SELECT Subject, AVG(conc) AS conc_media
    FROM Theoph
    GROUP BY Subject
+   ORDER BY CAST(Subject AS INTEGER)
    "
    resultado_media <- dbGetQuery(con, query_media)
    print(resultado_media)
@@ -330,18 +366,26 @@ d) Para obtener el tiempo en el que ocurre la concentración máxima por pacient
    ```{r}
    # Consulta SQL para obtener el tiempo de concentración máxima por paciente
    query_max <- "
-   SELECT t1.Subject, t1.Time, t1.conc
-   FROM Theoph t1
-   WHERE t1.conc = (
-     SELECT MAX(t2.conc)
+   SELECT t.Subject, t.Time, t.conc
+   FROM Theoph t
+   WHERE t.Time = (
+     SELECT MIN(t2.Time)
      FROM Theoph t2
-     WHERE t2.Subject = t1.Subject
+     WHERE t2.Subject = t.Subject
+       AND t2.conc = (
+         SELECT MAX(t3.conc)
+         FROM Theoph t3
+         WHERE t3.Subject = t.Subject
+       )
    )
+   ORDER BY CAST(t.Subject AS INTEGER)
    "
    resultado_max <- dbGetQuery(con, query_max)
    print(resultado_max)
    ```
-    En este caso, se utiliza una subconsulta correlacionada. Para cada fila de la tabla Theoph, la subconsulta obtiene el valor máximo de concentración (**`MAX(conc)`**) del mismo sujeto. Después, la consulta principal selecciona únicamente aquellas filas cuya concentración coincide con ese máximo. De este modo, no solo se identifica la concentración máxima de cada paciente, sino también el tiempo exacto en que se alcanza.
+      En este caso, se utiliza una subconsulta correlacionada para identificar la concentración máxima de cada sujeto. Para cada paciente, se calcula el valor máximo de concentración (**`MAX(conc)`**)  y, posteriormente, se seleccionan aquellas filas que alcanzan dicho valor.
+      
+    No obstante, para asegurar que el resultado devuelve una única fila por paciente, incluso en caso de que existan varios tiempos con la misma concentración máxima, se introduce un criterio adicional, que consiste en seleccionar el primer instante temporal en el que se alcanza dicha concentración máxima. De este modo, no solo se identifica la concentración máxima de cada paciente, sino también el tiempo exacto en que se alcanza.
 
 e) Para filtrar las observaciones en un intervalo de tiempo (entre 2 y 6 horas), se puede utilizar la siguiente consulta SQL:
 
@@ -351,6 +395,7 @@ e) Para filtrar las observaciones en un intervalo de tiempo (entre 2 y 6 horas),
    SELECT *
    FROM Theoph
    WHERE Time BETWEEN 2 AND 6
+   ORDER BY CAST(Subject AS INTEGER)
    "
    resultado_intervalo <- dbGetQuery(con, query_intervalo)
    print(resultado_intervalo)
@@ -365,6 +410,7 @@ f) Para mostrar el número de observaciones por paciente, se puede utilizar la s
    SELECT Subject, COUNT(*) AS num_observaciones
    FROM Theoph
    GROUP BY Subject
+   ORDER BY CAST(Subject AS INTEGER)
    "
    resultado_observaciones <- dbGetQuery(con, query_observaciones)
    print(resultado_observaciones)
@@ -469,6 +515,8 @@ b) Para calcular la probabilidad de que el fármaco se elimine en menos de 2 hor
 c) Para realizar 10.000 simulaciones en cada escenario y estimar la media, la varianza y los percentiles, se puede utilizar el siguiente código:
 
    ```{r}
+   set.seed(123)
+   
    # Simulaciones para la distribución normal
    simulaciones_normal <- rlnorm(10000, meanlog = meanlog_normal,
                                  sdlog = sdlog_normal)
