@@ -390,7 +390,7 @@ d) Para obtener el tiempo en el que ocurre la concentración máxima por pacient
    ```
       En este caso, se utilizan subconsultas correlacionadas para obtener, para cada paciente, la observación cuya concentración coincide con la máxima registrada (**`MAX(conc)`**).
       
-    Además, para garantizar que se devuelve una única fila por sujeto en caso de que existan varios tiempos con la misma concentración máxima, se añade un criterio adicional que selecciona el menor tiempo asociado a dicho valor máximo.De este modo, el resultado no solo identifica la concentración máxima de cada paciente, sino también el primer instante temporal en el que se alcanza.
+    Además, para garantizar que se devuelve una única fila por sujeto en caso de que existan varios tiempos con la misma concentración máxima, se añade un criterio adicional que selecciona el menor tiempo asociado a dicho valor máximo.
 
 e) Para filtrar las observaciones en un intervalo de tiempo (entre 2 y 6 horas), se puede utilizar la siguiente consulta SQL:
 
@@ -669,4 +669,4 @@ c) Para representar la distribución del número de pacientes que mejoran en amb
 
 d) Como reflexión final, el estudio muestra que el nuevo tratamiento analgésico tiene una eficacia variable entre pacientes, con una proporción relevante que no responde. En este caso, la probabilidad de mejoría es mucho mayor en el grupo que sí responde al tratamiento que en el grupo que no responde, tal como se ha visto en los resultados obtenidos.
 
-    Esto sugiere que el tratamiento puede ser especialmente útil en un subgrupo concreto de pacientes. Aun así, la existencia de muchos pacientes sin respuesta pone de manifiesto la necesidad de identificar factores predictivos que permitan anticipar qué pacientes se beneficiarán del tratamiento, así como valorar alternativas terapéuticas para aquellos que no muestran mejoría.
+    Esto sugiere que el tratamiento puede ser especialmente útil en un subgrupo concreto de pacientes. Aun así, la existencia de muchos pacientes sin respuesta expone la necesidad de identificar factores predictivos que permitan anticipar qué pacientes se beneficiarán del tratamiento, así como valorar alternativas terapéuticas para aquellos que no muestran mejoría.
